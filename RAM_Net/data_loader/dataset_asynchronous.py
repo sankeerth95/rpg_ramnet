@@ -96,8 +96,6 @@ class SynchronizedFramesEventsRawDataset(Dataset):
         self.nbr_events_per_frame = []
 
 
-
-
     def __len__(self):
         return self.length
 

@@ -30,6 +30,7 @@ class EventDataset(Dataset):
         else:
             self.use_mvsec = False
 
+        self.use_mvsec = True
         self.read_timestamps()
 
         self.parse_event_folder()
@@ -159,6 +160,7 @@ class VoxelGridDataset(EventDataset):
 
         return {'events': events}  # [num_bins x H x W] tensor
 
+
 class RawEventsDataset(EventDataset):
     """Load an event folder containing event tensors encoded with the VoxelGrid format."""
 
@@ -186,6 +188,30 @@ class RawEventsDataset(EventDataset):
         # events_raw = np.load(join(self.event_folder, 'events_{:010d}.npy'.format(self.first_valid_idx + i)))
         path_event = glob.glob(self.event_folder + '/*_{:04d}_events.npy'.format(self.first_valid_idx + i))
         events_raw = np.load(path_event[0])
+        return events_raw
+
+
+class ShiftedRawEventsDataset(RawEventsDataset):
+
+    def __init__(self, shift_duration):
+        pass
+
+    def __getitem__(self, i, transform_seed=None):
+        assert(i >= 0)
+        assert(i < self.length)
+
+        if transform_seed is None:
+            transform_seed = random.randint(0, 2**32)
+
+        # events_raw will be a [timestamp, x, y, polarity] floating point array
+        # events_raw = np.load(join(self.event_folder, 'events_{:010d}.npy'.format(self.first_valid_idx + i)))
+        all_events = []
+
+        while True:
+            path_event = glob.glob(self.event_folder + '/*_{:04d}_events.npy'.format(self.first_valid_idx + i))
+            events_raw = np.load(path_event[0])
+            all_events_raw.append(events_raw)
+
         return events_raw
 
 

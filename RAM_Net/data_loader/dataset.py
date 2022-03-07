@@ -128,7 +128,7 @@ class SequenceSynchronizedFramesEventsDataset(Dataset):
         if self.scale_factor < 1.0:
             for data_items in sequence:
                 for k, item in data_items.items():
-                    if k is not "times" and k is not "batchlength_events":
+                    if k != "times" and k != "batchlength_events":
                         item = item[None]
                         if "semantic" in k:
                             item = f.interpolate(item, scale_factor=self.scale_factor,
@@ -201,6 +201,8 @@ class SynchronizedFramesEventsDataset(Dataset):
         else:
             self.use_mvsec = False
 
+        self.use_mvsec = True
+
         # Load the stamp files
         self.stamps = np.loadtxt(
             join(self.depth_folder, 'timestamps.txt'))[:, 1]
@@ -231,6 +233,10 @@ class SynchronizedFramesEventsDataset(Dataset):
         assert(i >= 0)
         assert(i < (self.length // self.every_x_rgb_frame))
         item = {}
+
+        # HAX
+        if i == 0:
+            i = i+1
 
         def rgb2gray(rgb):
             return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140]).astype(np.float32)

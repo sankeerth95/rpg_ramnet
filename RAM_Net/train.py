@@ -9,7 +9,6 @@ from model.metric import *
 from torch.utils.data import DataLoader, ConcatDataset
 from data_loader.dataset import *
 from trainer.lstm_trainer import LSTMTrainer
-from trainer.trainer_no_recurrent import TrainerNoRecurrent
 from utils.data_augmentation import Compose, RandomRotationFlip, RandomCrop, CenterCrop
 from os.path import join
 import bisect
@@ -92,8 +91,11 @@ def main(config, resume, initial_checkpoint=None):
     recurrency = {}
 
     # this will raise an exception is the env variable is not set
-    preprocessed_datasets_folder = os.environ['PREPROCESSED_DATASETS_FOLDER']
-
+    try:
+        preprocessed_datasets_folder = os.environ['PREPROCESSED_DATASETS_FOLDER']
+    except:
+        preprocessed_datasets_folder = './'
+    
     use_phased_arch = config['use_phased_arch']
 
     for split in ['train', 'validation']:
